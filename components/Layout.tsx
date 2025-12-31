@@ -18,7 +18,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <h1 className="text-xl font-bold text-slate-800 tracking-tight">AI 备课助手</h1>
           </div>
           <div className="text-sm text-slate-500 hidden sm:block">
-            基于 Gemini 3 & Veo 构建
+            {/* 移除基于 Gemini 3 & Veo 构建 */}
           </div>
         </div>
       </header>

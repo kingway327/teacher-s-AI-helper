@@ -1,4 +1,12 @@
-# Logs
+# 依賴套件
+node_modules
+
+# 建置產物
+dist
+dist-ssr
+*.local
+
+# 日誌檔案
 logs
 *.log
 npm-debug.log*
@@ -7,18 +15,97 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# 環境變數檔案(包含敏感資訊如 API Keys)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env*.local
 
-# Editor directories and files
+# 作業系統產生的檔案
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+
+# IDE 和編輯器配置
+# VSCode
 .vscode/*
 !.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
+# JetBrains IDEs (WebStorm, IntelliJ IDEA, etc.)
 .idea
-.DS_Store
+*.iml
+*.iws
+*.ipr
+out/
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# Vim
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+
+# 其他編輯器
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# 套件管理器快取和鎖定檔案
+.npm
+.yarn
+.pnpm-debug.log
+.pnpm-store
+*.tsbuildinfo
+
+# 測試覆蓋率報告
+coverage
+*.lcov
+.nyc_output
+
+# 暫存和快取目錄
+.cache
+.parcel-cache
+.next
+.nuxt
+.vuepress/dist
+.serverless
+.fusebox
+.dynamodb
+
+# 除錯和效能分析
+.vscode-test
+*.cpuprofile
+*.heapsnapshot
+
+# 其他
+.vercel
+.netlify
