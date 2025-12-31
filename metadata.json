@@ -1,0 +1,5 @@
+{
+  "name": "AI 备课助手",
+  "description": "智能教师备课助手，提供自动教案设计、可视化教具生成及课堂导入视频功能。",
+  "requestFramePermissions": []
+}
