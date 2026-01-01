@@ -6,6 +6,11 @@ type StoredUser = AuthUser & {
   passwordSalt: string;
 };
 
+// NOTE: In-memory stores for users and sessions.
+// This implementation is intended for prototyping / development only.
+// All user accounts and sessions will be lost on server restart or redeployment.
+// For production use, replace these Maps with a persistent data store
+// (e.g. a database for users and Redis or similar for sessions).
 const AUTH_COOKIE = 'teacher-ai-helper-auth';
 const AUTH_SECRET = process.env.AUTH_SECRET || 'dev-auth-secret';
 
