@@ -46,7 +46,7 @@
    cp .env.local.example .env.local
    ```
    
-   編輯 `.env.local` 檔案,填入您的 Gemini API Key:
+   編輯 `.env.local` 檔案,填入您的 Gemini API Key (僅供本機開發後端代理使用):
    ```env
    GEMINI_API_KEY=your_actual_api_key_here
    ```
@@ -85,6 +85,12 @@ teacher-s-AI-helper/
 │   └── Student*.tsx        # 學生相關元件
 ├── services/               # 服務層
 │   └── geminiService.ts   # Gemini AI 服務
+├── api/                    # Vercel Serverless Functions
+│   ├── lesson-plan.ts      # 教案生成代理
+│   ├── resource-support.ts # 資源方案代理
+│   └── ...                 # 其他 AI 代理
+├── server/                 # 後端共用邏輯
+│   └── gemini.ts           # Gemini API 封裝
 ├── utils/                  # 工具函數
 │   └── fileUtils.ts       # 檔案處理工具
 ├── .github/workflows/      # GitHub Actions 配置
@@ -118,8 +124,8 @@ teacher-s-AI-helper/
    - Source 選擇 "GitHub Actions"
 
 2. **設定環境變數(可選)**
-   - 前往 Settings > Secrets and variables > Actions
-   - 新增 Secret: `GEMINI_API_KEY`(如果需要在建置時使用)
+   - GitHub Pages 無法執行後端代理功能,AI 相關功能將不可用
+   - 已在 workflow 設定 `VITE_BASE_PATH=/teacher-s-AI-helper/` 以支援子路徑部署
 
 3. **觸發部署**
    - 推送程式碼到 `main` 分支會自動觸發部署
@@ -135,11 +141,22 @@ teacher-s-AI-helper/
 - **Vercel**: [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/kingway327/teacher-s-AI-helper)
 - **Netlify**: [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/kingway327/teacher-s-AI-helper)
 
+### Vercel 環境變數
+
+在 Vercel 專案設定中新增以下環境變數,以啟用後端代理:
+
+- `GEMINI_API_KEY` (必填)
+- `IMAGE_API_KEY` (選填)
+- `VIDEO_API_KEY` (選填)
+ - `VITE_BASE_PATH` (選填,預設 `/`，若部署到子路徑需設定)
+
 ## 🔐 環境變數說明
 
 | 變數名稱 | 必填 | 說明 |
 |---------|------|------|
 | `GEMINI_API_KEY` | 是 | Google Gemini API 金鑰,用於 AI 功能 |
+| `IMAGE_API_KEY` | 否 | Imagen 影像模型 API 金鑰 |
+| `VIDEO_API_KEY` | 否 | Veo 影片模型 API 金鑰 |
 
 > ⚠️ **安全提醒**: 
 > - 請勿將 `.env.local` 檔案提交到版本控制系統
