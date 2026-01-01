@@ -18,13 +18,6 @@ const KeySelector: React.FC<KeySelectorProps> = ({ onKeySelected }) => {
   const [isChecking, setIsChecking] = useState(true);
   const [isStandalone, setIsStandalone] = useState(false);
 
-  // 手動輸入的 Key 狀態
-  const [keys, setKeys] = useState({
-    main: localStorage.getItem('GEMINI_API_KEY') || '',
-    image: localStorage.getItem('IMAGE_API_KEY') || '',
-    video: localStorage.getItem('VIDEO_API_KEY') || ''
-  });
-
   const checkKey = async () => {
     try {
       // 1. 檢查是否在 AI Studio 環境中
@@ -36,23 +29,8 @@ const KeySelector: React.FC<KeySelectorProps> = ({ onKeySelected }) => {
         }
       }
 
-      // 2. 檢查是否有本地環境變數配置的 API Key
-      const envKey = process.env.API_KEY;
-      if (envKey && envKey !== '""' && envKey !== 'undefined' && envKey.length > 10) {
-        onKeySelected();
-        return;
-      }
-
-      // 3. 檢查 localStorage 是否已有 Key
-      if (keys.main && keys.main.length > 10) {
-        onKeySelected();
-        return;
-      }
-
-      // 4. 如果都沒有，則顯示選擇介面
-      if (!window.aistudio) {
-        setIsStandalone(true);
-      }
+      // 2. 使用後端代理時，前端不保存 API Key
+      setIsStandalone(true);
       setIsChecking(false);
     } catch (e) {
       console.error("Error checking key", e);
@@ -65,17 +43,6 @@ const KeySelector: React.FC<KeySelectorProps> = ({ onKeySelected }) => {
     checkKey();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const handleSaveKeys = () => {
-    if (!keys.main || keys.main.length < 10) {
-      alert("请输入有效的主 API Key");
-      return;
-    }
-    localStorage.setItem('GEMINI_API_KEY', keys.main);
-    localStorage.setItem('IMAGE_API_KEY', keys.image);
-    localStorage.setItem('VIDEO_API_KEY', keys.video);
-    onKeySelected();
-  };
 
   const handleSelectKey = async () => {
     if (window.aistudio) {
@@ -115,48 +82,8 @@ const KeySelector: React.FC<KeySelectorProps> = ({ onKeySelected }) => {
         {isStandalone ? (
           <div className="space-y-4 mt-6">
             <p className="text-slate-500 text-sm text-center mb-4">
-              请输入您的 API 密钥。密钥将保存在本地浏览器中。
+              已启用后端代理模式，请在部署环境中配置 API 密钥后继续。
             </p>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">主 API Key (必填)</label>
-              <input
-                type="password"
-                value={keys.main}
-                onChange={(e) => setKeys({ ...keys, main: e.target.value })}
-                placeholder="用于文本生成任务"
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">图像生成 Key (选填)</label>
-              <input
-                type="password"
-                value={keys.image}
-                onChange={(e) => setKeys({ ...keys, image: e.target.value })}
-                placeholder="用于 Imagen 模型"
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">视频生成 Key (选填)</label>
-              <input
-                type="password"
-                value={keys.video}
-                onChange={(e) => setKeys({ ...keys, video: e.target.value })}
-                placeholder="用于 Veo 模型"
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-              />
-            </div>
-
-            <button
-              onClick={handleSaveKeys}
-              className="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow transition-colors mt-2"
-            >
-              保存并进入
-            </button>
 
             <div className="text-center">
               <button
