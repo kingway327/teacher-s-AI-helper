@@ -1,9 +1,10 @@
 import { generateLessonPlan } from '../server/gemini';
 import { LessonRequest } from '../types';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 const parseBody = (body: unknown) => (typeof body === 'string' ? JSON.parse(body) : body);
 
-export default async function handler(req: any, res: any) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
     return;
