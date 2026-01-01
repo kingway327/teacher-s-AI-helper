@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { PracticeRequest } from '../types';
 import FileImporter from './FileImporter';
+import AutoResizeTextarea from './AutoResizeTextarea';
 
 interface PracticeInputFormProps {
   onSubmit: (data: PracticeRequest) => void;
@@ -32,19 +33,18 @@ const PracticeInputForm: React.FC<PracticeInputFormProps> = ({ onSubmit, isLoadi
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 h-full flex flex-col">
+    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col">
       <h2 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 00(2 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
         </svg>
         练习题参数
       </h2>
-      
-      <form onSubmit={handleSubmit} className="space-y-4 flex-grow">
+
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1">学科与年级</label>
-          <input
-            type="text"
+          <AutoResizeTextarea
             name="subject"
             required
             placeholder="例如：初中二年级物理"
@@ -56,8 +56,7 @@ const PracticeInputForm: React.FC<PracticeInputFormProps> = ({ onSubmit, isLoadi
 
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1">核心知识点</label>
-          <input
-            type="text"
+          <AutoResizeTextarea
             name="knowledgePoint"
             required
             placeholder="例如：欧姆定律的应用"
@@ -72,24 +71,22 @@ const PracticeInputForm: React.FC<PracticeInputFormProps> = ({ onSubmit, isLoadi
             <label className="block text-sm font-medium text-slate-700">教学目标 / 考查范围</label>
             <FileImporter onImport={handleImportObjectives} label="导入考纲或资料" />
           </div>
-          <textarea
+          <AutoResizeTextarea
             name="objectives"
-            rows={4}
             required
             placeholder="例如：掌握公式 I=U/R，能解决简单的串联电路计算问题..."
             value={formData.objectives}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm resize-none"
+            className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm"
           />
         </div>
 
-        <div className="pt-4 mt-auto">
+        <div className="pt-4">
           <button
             type="submit"
             disabled={isLoading}
-            className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors ${
-              isLoading ? 'opacity-70 cursor-not-allowed' : ''
-            }`}
+            className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors ${isLoading ? 'opacity-70 cursor-not-allowed' : ''
+              }`}
           >
             {isLoading ? (
               <span className="flex items-center gap-2">

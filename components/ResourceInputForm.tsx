@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ResourceRequest } from '../types';
 import FileImporter from './FileImporter';
+import AutoResizeTextarea from './AutoResizeTextarea';
 
 interface ResourceInputFormProps {
   onSubmit: (data: ResourceRequest) => void;
@@ -20,7 +21,7 @@ const ResourceInputForm: React.FC<ResourceInputFormProps> = ({ onSubmit, isLoadi
   };
 
   const handleImportKeyPoints = (content: string) => {
-     setFormData(prev => ({
+    setFormData(prev => ({
       ...prev,
       keyPoints: prev.keyPoints ? prev.keyPoints + '\n\n[导入内容]:\n' + content : content
     }));
@@ -32,19 +33,18 @@ const ResourceInputForm: React.FC<ResourceInputFormProps> = ({ onSubmit, isLoadi
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 h-full flex flex-col">
+    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col">
       <h2 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
         </svg>
         资源规划信息
       </h2>
-      
-      <form onSubmit={handleSubmit} className="space-y-4 flex-grow">
+
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1">教学主题</label>
-          <input
-            type="text"
+          <AutoResizeTextarea
             name="topic"
             required
             placeholder="例如：光合作用的过程"
@@ -61,6 +61,7 @@ const ResourceInputForm: React.FC<ResourceInputFormProps> = ({ onSubmit, isLoadi
             value={formData.ageGroup}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+            title="选择学生年龄段"
           >
             <option value="幼儿园">幼儿园 (3-6岁)</option>
             <option value="小学低年级">小学低年级 (1-3年级)</option>
@@ -73,27 +74,25 @@ const ResourceInputForm: React.FC<ResourceInputFormProps> = ({ onSubmit, isLoadi
 
         <div>
           <div className="flex justify-between items-center mb-1">
-             <label className="block text-sm font-medium text-slate-700">教学重点与难点</label>
-             <FileImporter onImport={handleImportKeyPoints} label="导入课件内容" />
+            <label className="block text-sm font-medium text-slate-700">教学重点与难点</label>
+            <FileImporter onImport={handleImportKeyPoints} label="导入课件内容" />
           </div>
-          <textarea
+          <AutoResizeTextarea
             name="keyPoints"
-            rows={4}
             required
             placeholder="例如：重点是理解光反应和暗反应的区别；难点是微观过程的想象。"
             value={formData.keyPoints}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm resize-none"
+            className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm"
           />
         </div>
 
-        <div className="pt-4 mt-auto">
+        <div className="pt-4">
           <button
             type="submit"
             disabled={isLoading}
-            className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors ${
-              isLoading ? 'opacity-70 cursor-not-allowed' : ''
-            }`}
+            className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors ${isLoading ? 'opacity-70 cursor-not-allowed' : ''
+              }`}
           >
             {isLoading ? (
               <span className="flex items-center gap-2">

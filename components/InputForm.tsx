@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { LessonRequest } from '../types';
 import FileImporter from './FileImporter';
+import AutoResizeTextarea from './AutoResizeTextarea';
 
 interface InputFormProps {
   onSubmit: (data: LessonRequest) => void;
@@ -34,19 +35,18 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 h-full flex flex-col">
+    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col">
       <h2 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
         </svg>
         课程信息
       </h2>
-      
-      <form onSubmit={handleSubmit} className="space-y-4 flex-grow">
+
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1">学科与年级</label>
-          <input
-            type="text"
+          <AutoResizeTextarea
             name="subject"
             required
             placeholder="例如：小学五年级数学"
@@ -58,8 +58,7 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
 
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1">课题名称</label>
-          <input
-            type="text"
+          <AutoResizeTextarea
             name="topic"
             required
             placeholder="例如：分数的乘法"
@@ -71,29 +70,23 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
 
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1">课时长度</label>
-          <select
+          <AutoResizeTextarea
             name="duration"
+            placeholder="例如：45 分钟 或 2 课时"
             value={formData.duration}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-          >
-            <option value="30 分钟">30 分钟</option>
-            <option value="40 分钟">40 分钟</option>
-            <option value="45 分钟">45 分钟</option>
-            <option value="60 分钟">60 分钟</option>
-            <option value="90 分钟">90 分钟</option>
-          </select>
+          />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1">教学目标</label>
-          <textarea
+          <AutoResizeTextarea
             name="objectives"
-            rows={3}
             placeholder="本节课的关键知识点或技能目标..."
             value={formData.objectives}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm resize-none"
+            className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm"
           />
         </div>
 
@@ -102,23 +95,21 @@ const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
             <label className="block text-sm font-medium text-slate-700">学生学情（选填）</label>
             <FileImporter onImport={handleImportBackground} label="导入学情资料" />
           </div>
-          <textarea
+          <AutoResizeTextarea
             name="background"
-            rows={2}
             placeholder="例如：视觉型学习者居多，基础知识较薄弱..."
             value={formData.background}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm resize-none"
+            className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm"
           />
         </div>
 
-        <div className="pt-4 mt-auto">
+        <div className="pt-4">
           <button
             type="submit"
             disabled={isLoading}
-            className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors ${
-              isLoading ? 'opacity-70 cursor-not-allowed' : ''
-            }`}
+            className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors ${isLoading ? 'opacity-70 cursor-not-allowed' : ''
+              }`}
           >
             {isLoading ? (
               <span className="flex items-center gap-2">

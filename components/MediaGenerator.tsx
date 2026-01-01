@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { generateImage, generateVideo } from '../services/geminiService';
 import { ImageSize, ImageState, VideoState } from '../types';
+import AutoResizeTextarea from './AutoResizeTextarea';
 
 interface MediaGeneratorProps {
   topic: string;
@@ -88,11 +89,10 @@ const MediaGenerator: React.FC<MediaGeneratorProps> = ({ topic }) => {
           <div className="space-y-4">
             <div>
               <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">提示词</label>
-              <textarea
+              <AutoResizeTextarea
                 value={imagePrompt}
                 onChange={(e) => setImagePrompt(e.target.value)}
-                rows={3}
-                className="w-full text-sm border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 resize-none"
+                className="w-full text-sm border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                 placeholder="输入图片描述..."
               />
             </div>
@@ -138,11 +138,10 @@ const MediaGenerator: React.FC<MediaGeneratorProps> = ({ topic }) => {
           <div className="space-y-4">
             <div>
               <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">提示词</label>
-              <textarea
+              <AutoResizeTextarea
                 value={videoPrompt}
                 onChange={(e) => setVideoPrompt(e.target.value)}
-                rows={3}
-                className="w-full text-sm border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 resize-none"
+                className="w-full text-sm border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                 placeholder="输入视频描述..."
               />
             </div>
