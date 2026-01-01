@@ -1,61 +1,41 @@
 import { AuthCredentials, AuthRegistration, AuthUser } from '../types';
-import { AuthDatabaseUser, clearSession, getSessionUserId, getUsers, saveUsers, setSessionUserId } from './authDatabase';
 
-const generateId = () => {
-  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
-    return crypto.randomUUID();
+const parseErrorResponse = async (response: Response) => {
+  const contentType = response.headers.get('content-type') || '';
+  if (contentType.includes('application/json')) {
+    const data = await response.json().catch(() => null);
+    if (data?.error) {
+      return data.error as string;
+    }
   }
-  return `user_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+  return response.text();
 };
 
-const sanitizeUser = (user: AuthDatabaseUser): AuthUser => {
-  const { password: _password, ...safeUser } = user;
-  return safeUser;
-};
+const requestJson = async <T>(url: string, payload?: unknown, method = 'POST'): Promise<T> => {
+  const response = await fetch(url, {
+    method,
+    credentials: 'include',
+    headers: payload ? { 'Content-Type': 'application/json' } : undefined,
+    body: payload ? JSON.stringify(payload) : undefined,
+  });
 
-export const registerUser = async (payload: AuthRegistration): Promise<AuthUser> => {
-  const users = getUsers();
-  const exists = users.some((user) => user.email.toLowerCase() === payload.email.toLowerCase());
-  if (exists) {
-    throw new Error('该邮箱已注册，请直接登录。');
+  if (!response.ok) {
+    const errorText = await parseErrorResponse(response);
+    throw new Error(errorText || `Request failed with status ${response.status}`);
   }
 
-  const newUser: AuthDatabaseUser = {
-    id: generateId(),
-    name: payload.name.trim(),
-    email: payload.email.trim().toLowerCase(),
-    password: payload.password,
-    createdAt: new Date().toISOString(),
-  };
-
-  const nextUsers = [...users, newUser];
-  saveUsers(nextUsers);
-  setSessionUserId(newUser.id);
-  return sanitizeUser(newUser);
+  return response.json() as Promise<T>;
 };
 
-export const loginUser = async (payload: AuthCredentials): Promise<AuthUser> => {
-  const users = getUsers();
-  const matched = users.find(
-    (user) => user.email.toLowerCase() === payload.email.toLowerCase() && user.password === payload.password
-  );
-  if (!matched) {
-    throw new Error('账号或密码错误，请重试。');
-  }
-  setSessionUserId(matched.id);
-  return sanitizeUser(matched);
-};
+export const registerUser = async (payload: AuthRegistration): Promise<AuthUser> =>
+  requestJson<AuthUser>('/api/auth/register', payload);
 
-export const getCurrentUser = (): AuthUser | null => {
-  const userId = getSessionUserId();
-  if (!userId) {
-    return null;
-  }
-  const users = getUsers();
-  const matched = users.find((user) => user.id === userId);
-  return matched ? sanitizeUser(matched) : null;
-};
+export const loginUser = async (payload: AuthCredentials): Promise<AuthUser> =>
+  requestJson<AuthUser>('/api/auth/login', payload);
 
-export const logoutUser = () => {
-  clearSession();
+export const getCurrentUser = async (): Promise<AuthUser | null> =>
+  requestJson<AuthUser | null>('/api/auth/me', undefined, 'GET');
+
+export const logoutUser = async () => {
+  await requestJson<{ ok: boolean }>('/api/auth/logout', {});
 };

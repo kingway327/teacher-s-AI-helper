@@ -41,6 +41,7 @@ jobs:
         env:
           # 如果需要在建置時使用 API Key,請在 GitHub Repository Settings > Secrets 中設定
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          VITE_BASE_PATH: /teacher-s-AI-helper/
       
       - name: 設定 GitHub Pages
         uses: actions/configure-pages@v4
