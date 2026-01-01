@@ -125,6 +125,7 @@ teacher-s-AI-helper/
 
 2. **設定環境變數(可選)**
    - GitHub Pages 無法執行後端代理功能,AI 相關功能將不可用
+   - 已在 workflow 設定 `VITE_BASE_PATH=/teacher-s-AI-helper/` 以支援子路徑部署
 
 3. **觸發部署**
    - 推送程式碼到 `main` 分支會自動觸發部署
@@ -147,6 +148,7 @@ teacher-s-AI-helper/
 - `GEMINI_API_KEY` (必填)
 - `IMAGE_API_KEY` (選填)
 - `VIDEO_API_KEY` (選填)
+ - `VITE_BASE_PATH` (選填,預設 `/`，若部署到子路徑需設定)
 
 ## 🔐 環境變數說明
 
