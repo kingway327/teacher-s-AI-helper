@@ -1,4 +1,4 @@
-import { clearSession, clearSessionCookie } from '../../server/auth';
+import { clearAuthCookie } from '../../server/auth';
 
 export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') {
@@ -6,7 +6,6 @@ export default async function handler(req: any, res: any) {
     return;
   }
 
-  clearSession(req.headers?.cookie);
-  res.setHeader('Set-Cookie', clearSessionCookie());
+  res.setHeader('Set-Cookie', clearAuthCookie());
   res.status(200).json({ ok: true });
 }

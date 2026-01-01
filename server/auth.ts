@@ -6,9 +6,8 @@ type StoredUser = AuthUser & {
   passwordSalt: string;
 };
 
-const usersByEmail = new Map<string, StoredUser>();
-const usersById = new Map<string, StoredUser>();
-const sessions = new Map<string, string>();
+const AUTH_COOKIE = 'teacher-ai-helper-auth';
+const AUTH_SECRET = process.env.AUTH_SECRET || 'dev-auth-secret';
 
 const hashPassword = (password: string, salt: string) =>
   crypto.pbkdf2Sync(password, salt, 120000, 64, 'sha512').toString('hex');
@@ -27,8 +26,6 @@ const sanitizeUser = (user: StoredUser): AuthUser => ({
   createdAt: user.createdAt,
 });
 
-const generateSessionId = () => crypto.randomBytes(24).toString('hex');
-
 const parseCookies = (cookieHeader?: string) => {
   if (!cookieHeader) {
     return new Map<string, string>();
@@ -37,11 +34,45 @@ const parseCookies = (cookieHeader?: string) => {
   return new Map(entries.map(([key, value]) => [key, decodeURIComponent(value)]));
 };
 
-export const registerUser = (payload: AuthRegistration): { user: AuthUser; sessionId: string } => {
-  const email = payload.email.trim().toLowerCase();
-  if (usersByEmail.has(email)) {
-    throw new Error('该邮箱已注册，请直接登录。');
+const base64UrlEncode = (value: string) =>
+  Buffer.from(value).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+
+const base64UrlDecode = (value: string) =>
+  Buffer.from(value.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8');
+
+const signPayload = (payload: string) =>
+  base64UrlEncode(crypto.createHmac('sha256', AUTH_SECRET).update(payload).digest('hex'));
+
+const serializeAuthCookie = (user: StoredUser) => {
+  const payload = JSON.stringify(user);
+  const encoded = base64UrlEncode(payload);
+  const signature = signPayload(encoded);
+  return `${encoded}.${signature}`;
+};
+
+const parseAuthCookie = (cookieHeader?: string): StoredUser | null => {
+  const cookies = parseCookies(cookieHeader);
+  const value = cookies.get(AUTH_COOKIE);
+  if (!value) {
+    return null;
   }
+  const [encoded, signature] = value.split('.');
+  if (!encoded || !signature) {
+    return null;
+  }
+  const expectedSignature = signPayload(encoded);
+  if (signature !== expectedSignature) {
+    return null;
+  }
+  try {
+    return JSON.parse(base64UrlDecode(encoded)) as StoredUser;
+  } catch {
+    return null;
+  }
+};
+
+export const registerUser = (payload: AuthRegistration): { user: AuthUser; cookieValue: string } => {
+  const email = payload.email.trim().toLowerCase();
 
   const salt = crypto.randomBytes(16).toString('hex');
   const passwordHash = hashPassword(payload.password, salt);
@@ -54,64 +85,47 @@ export const registerUser = (payload: AuthRegistration): { user: AuthUser; sessi
     passwordSalt: salt,
   };
 
-  usersByEmail.set(email, user);
-  usersById.set(user.id, user);
-
-  const sessionId = generateSessionId();
-  sessions.set(sessionId, user.id);
-
-  return { user: sanitizeUser(user), sessionId };
+  return { user: sanitizeUser(user), cookieValue: serializeAuthCookie(user) };
 };
 
-export const loginUser = (payload: AuthCredentials): { user: AuthUser; sessionId: string } => {
+export const loginUser = (
+  payload: AuthCredentials,
+  cookieHeader?: string
+): { user: AuthUser; cookieValue: string } => {
+  const stored = parseAuthCookie(cookieHeader);
+  if (!stored) {
+    throw new Error('账号或密码错误，请重试。');
+  }
   const email = payload.email.trim().toLowerCase();
-  const user = usersByEmail.get(email);
-  if (!user) {
+  if (stored.email !== email) {
     throw new Error('账号或密码错误，请重试。');
   }
 
-  const candidateHash = hashPassword(payload.password, user.passwordSalt);
+  const candidateHash = hashPassword(payload.password, stored.passwordSalt);
   const valid =
-    candidateHash.length === user.passwordHash.length &&
-    crypto.timingSafeEqual(Buffer.from(candidateHash), Buffer.from(user.passwordHash));
+    candidateHash.length === stored.passwordHash.length &&
+    crypto.timingSafeEqual(Buffer.from(candidateHash), Buffer.from(stored.passwordHash));
   if (!valid) {
     throw new Error('账号或密码错误，请重试。');
   }
 
-  const sessionId = generateSessionId();
-  sessions.set(sessionId, user.id);
-  return { user: sanitizeUser(user), sessionId };
+  return { user: sanitizeUser(stored), cookieValue: serializeAuthCookie(stored) };
 };
 
 export const getUserFromRequest = (cookieHeader?: string): AuthUser | null => {
-  const cookies = parseCookies(cookieHeader);
-  const sessionId = cookies.get('teacher-ai-helper-session');
-  if (!sessionId) {
-    return null;
-  }
-  const userId = sessions.get(sessionId);
-  if (!userId) {
-    return null;
-  }
-  const user = usersById.get(userId);
+  const user = parseAuthCookie(cookieHeader);
   return user ? sanitizeUser(user) : null;
 };
 
-export const clearSession = (cookieHeader?: string) => {
-  const cookies = parseCookies(cookieHeader);
-  const sessionId = cookies.get('teacher-ai-helper-session');
-  if (sessionId) {
-    sessions.delete(sessionId);
-  }
-};
+export const clearSession = () => {};
 
-export const buildSessionCookie = (sessionId: string) => {
+export const buildAuthCookie = (cookieValue: string) => {
   const attributes = ['HttpOnly', 'Path=/', 'SameSite=Lax'];
   if (process.env.NODE_ENV === 'production') {
     attributes.push('Secure');
   }
-  return `teacher-ai-helper-session=${encodeURIComponent(sessionId)}; ${attributes.join('; ')}`;
+  return `${AUTH_COOKIE}=${encodeURIComponent(cookieValue)}; ${attributes.join('; ')}`;
 };
 
-export const clearSessionCookie = () =>
-  'teacher-ai-helper-session=; HttpOnly; Path=/; SameSite=Lax; Max-Age=0';
+export const clearAuthCookie = () =>
+  `${AUTH_COOKIE}=; HttpOnly; Path=/; SameSite=Lax; Max-Age=0`;
