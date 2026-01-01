@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import AuthPage from './components/AuthPage';
 import Layout from './components/Layout';
 import InputForm from './components/InputForm';
 import ResourceInputForm from './components/ResourceInputForm';
@@ -10,12 +11,15 @@ import PracticeDisplay from './components/PracticeDisplay';
 import StudentAnalysisDisplay from './components/StudentAnalysisDisplay';
 import MediaGenerator from './components/MediaGenerator';
 import KeySelector from './components/KeySelector';
+import { getCurrentUser, logoutUser } from './services/authApi';
 import { generateLessonPlan, generateResourceSupport, generatePracticeExercises, analyzeStudentReadiness, getQuickSuggestion } from './services/geminiService';
-import { GeneratedPlan, LessonRequest, ResourcePlan, ResourceRequest, PracticePlan, PracticeRequest, StudentAnalysisPlan, StudentAnalysisRequest } from './types';
+import { AuthUser, GeneratedPlan, LessonRequest, ResourcePlan, ResourceRequest, PracticePlan, PracticeRequest, StudentAnalysisPlan, StudentAnalysisRequest } from './types';
 
 type AppMode = 'lesson' | 'resource' | 'practice' | 'analysis';
 
 const App: React.FC = () => {
+  const [authUser, setAuthUser] = useState<AuthUser | null>(null);
+  const [authReady, setAuthReady] = useState(false);
   const [hasKey, setHasKey] = useState(false);
   const [mode, setMode] = useState<AppMode>('lesson');
   const [isLoading, setIsLoading] = useState(false);
@@ -36,6 +40,12 @@ const App: React.FC = () => {
   // Student Analysis State
   const [currentAnalysisPlan, setCurrentAnalysisPlan] = useState<StudentAnalysisPlan | null>(null);
   const [currentAnalysisRequest, setCurrentAnalysisRequest] = useState<StudentAnalysisRequest | null>(null);
+
+  useEffect(() => {
+    const user = getCurrentUser();
+    setAuthUser(user);
+    setAuthReady(true);
+  }, []);
 
   const handleGenerateLesson = async (request: LessonRequest) => {
     setIsLoading(true);
@@ -97,6 +107,24 @@ const App: React.FC = () => {
     setQuickAnswer({ q: question, a: answer });
   };
 
+  const handleLogout = () => {
+    logoutUser();
+    setAuthUser(null);
+    setHasKey(false);
+  };
+
+  if (!authReady) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-500">
+        正在加载...
+      </div>
+    );
+  }
+
+  if (!authUser) {
+    return <AuthPage onAuthSuccess={(user) => setAuthUser(user)} />;
+  }
+
   if (!hasKey) {
     return <KeySelector onKeySelected={() => setHasKey(true)} />;
   }
@@ -109,7 +137,7 @@ const App: React.FC = () => {
   else if (mode === 'analysis') activeTopic = currentAnalysisRequest?.upcomingTopic || '';
 
   return (
-    <Layout>
+    <Layout user={authUser} onLogout={handleLogout}>
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-[calc(100vh-8rem)]">
         {/* Left Col: Input & Controls */}
         <div className="lg:col-span-4 h-full flex flex-col gap-4 overflow-y-auto pr-1">
