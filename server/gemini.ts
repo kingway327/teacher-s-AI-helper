@@ -66,9 +66,6 @@ export const generateImage = async (prompt: string, size: ImageSize): Promise<st
 export const generateVideo = async (prompt: string) => {
   const ai = getAIClient('video');
   const apiKey = getApiKey('video');
-  if (!apiKey) {
-    throw new Error('Video API key not configured on server.');
-  }
 
   let operation = await ai.models.generateVideos({
     model: 'veo-2.0-generate-video',
