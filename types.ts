@@ -70,3 +70,19 @@ export interface ImageState {
   imageUrl: string | null;
   error: string | null;
 }
+
+export interface AuthUser {
+  id: string;
+  name: string;
+  email: string;
+  createdAt: string;
+}
+
+export interface AuthCredentials {
+  email: string;
+  password: string;
+}
+
+export interface AuthRegistration extends AuthCredentials {
+  name: string;
+}
