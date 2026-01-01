@@ -46,6 +46,10 @@ const App: React.FC = () => {
       try {
         const user = await getCurrentUser();
         setAuthUser(user);
+      } catch (error) {
+        console.error('Failed to load user session:', error);
+        // User is not logged in or session expired, continue with null user
+        setAuthUser(null);
       } finally {
         setAuthReady(true);
       }

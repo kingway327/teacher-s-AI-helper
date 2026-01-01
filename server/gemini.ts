@@ -72,9 +72,17 @@ export const generateVideo = async (prompt: string) => {
     prompt,
   });
 
+  // Timeout protection: max 10 minutes (120 iterations * 5 seconds)
+  const maxIterations = 120;
+  let iterations = 0;
+
   while (!operation.done) {
+    if (iterations >= maxIterations) {
+      throw new Error('视频生成超时。请稍后重试或尝试更简单的提示。');
+    }
     await new Promise((resolve) => setTimeout(resolve, 5000));
     operation = await ai.operations.getVideosOperation({ operation });
+    iterations++;
   }
 
   const videoUri = operation.response?.generatedVideos?.[0]?.video?.uri;

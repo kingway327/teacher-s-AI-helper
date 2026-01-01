@@ -1,10 +1,10 @@
 import { registerUser, buildAuthCookie } from '../../server/auth';
 import { AuthRegistration } from '../../types';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 const parseBody = (body: unknown) => (typeof body === 'string' ? JSON.parse(body) : body);
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
     return;

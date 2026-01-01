@@ -10,8 +10,31 @@ const postJson = async <T>(url: string, payload: unknown): Promise<T> => {
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(errorText || `Request failed with status ${response.status}`);
+    const contentType = response.headers.get('Content-Type') || '';
+    let errorMessage = `请求失败 (状态码 ${response.status})`;
+
+    if (contentType.includes('application/json')) {
+      try {
+        const errorBody = await response.json();
+        if (errorBody && typeof errorBody === 'object') {
+          const maybeError =
+            (errorBody as { error?: unknown; message?: unknown }).error ??
+            (errorBody as { error?: unknown; message?: unknown }).message;
+          if (typeof maybeError === 'string' && maybeError.trim()) {
+            errorMessage = maybeError;
+          }
+        }
+      } catch {
+        // Ignore JSON parse errors and fall back to the generic message.
+      }
+    } else {
+      const errorText = await response.text();
+      if (errorText) {
+        errorMessage = errorText;
+      }
+    }
+
+    throw new Error(errorMessage);
   }
 
   return response.json() as Promise<T>;
@@ -27,8 +50,31 @@ const postBlob = async (url: string, payload: unknown): Promise<Blob> => {
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(errorText || `Request failed with status ${response.status}`);
+    const contentType = response.headers.get('Content-Type') || '';
+    let errorMessage = `请求失败 (状态码 ${response.status})`;
+
+    if (contentType.includes('application/json')) {
+      try {
+        const errorBody = await response.json();
+        if (errorBody && typeof errorBody === 'object') {
+          const maybeError =
+            (errorBody as { error?: unknown; message?: unknown }).error ??
+            (errorBody as { error?: unknown; message?: unknown }).message;
+          if (typeof maybeError === 'string' && maybeError.trim()) {
+            errorMessage = maybeError;
+          }
+        }
+      } catch {
+        // Ignore JSON parse errors and fall back to the generic message.
+      }
+    } else {
+      const errorText = await response.text();
+      if (errorText) {
+        errorMessage = errorText;
+      }
+    }
+
+    throw new Error(errorMessage);
   }
 
   return response.blob();
