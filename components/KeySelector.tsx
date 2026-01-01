@@ -36,20 +36,7 @@ const KeySelector: React.FC<KeySelectorProps> = ({ onKeySelected }) => {
         }
       }
 
-      // 2. 檢查是否有本地環境變數配置的 API Key
-      const envKey = process.env.API_KEY;
-      if (envKey && envKey !== '""' && envKey !== 'undefined' && envKey.length > 10) {
-        onKeySelected();
-        return;
-      }
-
-      // 3. 檢查 localStorage 是否已有 Key
-      if (keys.main && keys.main.length > 10) {
-        onKeySelected();
-        return;
-      }
-
-      // 4. 如果都沒有，則顯示選擇介面
+      // 2. 如果不在 AI Studio 中，顯示選擇介面 (不再自動跳過，即使有 localStorage 或 env key)
       if (!window.aistudio) {
         setIsStandalone(true);
       }
@@ -151,20 +138,37 @@ const KeySelector: React.FC<KeySelectorProps> = ({ onKeySelected }) => {
               />
             </div>
 
-            <button
-              onClick={handleSaveKeys}
-              className="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow transition-colors mt-2"
-            >
-              保存并进入
-            </button>
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={handleSaveKeys}
+                className="flex-1 py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow transition-colors"
+              >
+                保存并进入
+              </button>
+              <button
+                onClick={() => {
+                  localStorage.removeItem('GEMINI_API_KEY');
+                  localStorage.removeItem('IMAGE_API_KEY');
+                  localStorage.removeItem('VIDEO_API_KEY');
+                  setKeys({ main: '', image: '', video: '' });
+                }}
+                className="py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-600 font-medium rounded-lg transition-colors"
+                title="清除本地存储的密钥"
+              >
+                清除
+              </button>
+            </div>
 
-            <div className="text-center">
+            <div className="text-center space-y-2">
               <button
                 onClick={() => onKeySelected()}
                 className="text-xs text-slate-400 hover:text-slate-600 underline"
               >
                 跳过，进入预览模式
               </button>
+              <p className="text-[10px] text-slate-400">
+                注：为了方便使用，您的密钥会存储在浏览器的 LocalStorage 中。
+              </p>
             </div>
           </div>
         ) : (

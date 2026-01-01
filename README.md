@@ -2,176 +2,163 @@
 <img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
 </div>
 
-# 🎓 AI 備課助手 (Teacher's AI Helper)
+# 🎓 AI 备课助手 (Teacher's AI Helper)
 
-> 使用 Google Gemini AI 協助教師進行課程規劃、教材生成和學生分析的智能備課工具
+> 使用 Google Gemini AI 协助教师进行课程规划、教材生成和学情分析的智能备课工具
 
-[![部署狀態](https://github.com/kingway327/teacher-s-AI-helper/workflows/部署到%20GitHub%20Pages/badge.svg)](https://github.com/kingway327/teacher-s-AI-helper/actions)
+[![部署状态](https://github.com/kingway327/teacher-s-AI-helper/workflows/部署到%20GitHub%20Pages/badge.svg)](https://github.com/kingway327/teacher-s-AI-helper/actions)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ## ✨ 功能特色
 
-- 📝 **智能課程規劃**: 根據教學目標自動生成完整的課程計劃
-- 📚 **教材生成**: 利用 AI 協助創建教學素材和練習題
-- 👥 **學生分析**: 分析學生學習狀況,提供個性化建議
-- 📊 **資源管理**: 整合和管理教學資源
-- 🎯 **練習題庫**: 自動生成和管理練習題目
-- 📄 **文件匯入/匯出**: 支援 Word 文件的匯入和匯出功能
+- 📝 **智能课程规划**: 根据教学目标自动生成完整的教学设计方案
+- 🧠 **全局记忆 (教师介绍)**: 设置您的教学背景，AI 将为您提供更个性化的建议
+- 📚 **教材生成**: 利用 AI 协助创建教学素材、示意图和导入视频
+- 👥 **学情分析**: 分析学生学习状况，提供针对性的预备知识建议
+- 📊 **资源支持**: 整合可信网络资源和 AI 生成素材
+- 🎯 **分层练习**: 自动生成符合学生不同水平的练习题目
+- 📄 **文件导入/导出**: 支持 Word 文件的导入和导出功能
 
-## 🚀 快速開始
+## 🚀 快速开始
 
-### 環境需求
+### 环境需求
 
 - **Node.js**: 18.x 或更高版本
 - **npm**: 8.x 或更高版本
-- **瀏覽器**: 支援現代瀏覽器(Chrome、Firefox、Safari、Edge)
+- **浏览器**: 支持现代浏览器 (Chrome, Firefox, Safari, Edge)
 
-### 安裝步驟
+### 安装步骤
 
-1. **克隆專案**
+1. **克隆项目**
    ```bash
    git clone https://github.com/kingway327/teacher-s-AI-helper.git
    cd teacher-s-AI-helper
    ```
 
-2. **安裝依賴**
+2. **安装依赖**
    ```bash
    npm install
    ```
 
-3. **配置環境變數**
+3. **配置环境变量**
    
-   複製環境變數範本檔案:
+   复制环境变量模板文件:
    ```bash
    cp .env.local.example .env.local
    ```
    
-   編輯 `.env.local` 檔案,填入您的 Gemini API Key:
+   编辑 `.env.local` 文件，填入您的 Gemini API Key:
    ```env
    GEMINI_API_KEY=your_actual_api_key_here
+   IMAGE_API_KEY=your_image_api_key_here
+   VIDEO_API_KEY=your_video_api_key_here
    ```
    
-   > 💡 **如何獲取 API Key**: 前往 [Google AI Studio](https://makersuite.google.com/app/apikey) 申請免費的 Gemini API Key
+   > 💡 **如何获取 API Key**: 前往 [Google AI Studio](https://makersuite.google.com/app/apikey) 申请免费的 Gemini API Key
 
-4. **啟動開發伺服器**
+4. **启动开发服务器**
    ```bash
    npm run dev
    ```
    
-   開啟瀏覽器訪問 `http://localhost:3000`
+   打开浏览器访问 `http://localhost:3000`
 
 ## 📦 可用指令
 
-| 指令 | 說明 |
+| 指令 | 说明 |
 |------|------|
-| `npm run dev` | 啟動開發伺服器(預設端口: 3000) |
-| `npm run build` | 建置生產版本 |
-| `npm run preview` | 預覽建置後的應用程式 |
-| `npm run type-check` | 執行 TypeScript 類型檢查 |
+| `npm run dev` | 启动开发服务器 (默认端口: 3000) |
+| `npm run build` | 构建生产版本 |
+| `npm run preview` | 预览构建后的应用程序 |
+| `npm run type-check` | 执行 TypeScript 类型检查 |
 
-## 📁 專案結構
+## 📁 项目结构
 
 ```
 teacher-s-AI-helper/
-├── components/              # React 元件
-│   ├── FileImporter.tsx    # 檔案匯入元件
-│   ├── InputForm.tsx       # 輸入表單元件
-│   ├── KeySelector.tsx     # API Key 選擇器
-│   ├── Layout.tsx          # 版面配置元件
-│   ├── MediaGenerator.tsx  # 媒體生成元件
-│   ├── PlanDisplay.tsx     # 課程計劃顯示
-│   ├── PracticeDisplay.tsx # 練習題顯示
-│   ├── ResourceDisplay.tsx # 資源顯示
-│   └── Student*.tsx        # 學生相關元件
-├── services/               # 服務層
-│   └── geminiService.ts   # Gemini AI 服務
-├── utils/                  # 工具函數
-│   └── fileUtils.ts       # 檔案處理工具
+├── components/              # React 组件
+│   ├── FileImporter.tsx    # 文件导入组件
+│   ├── InputForm.tsx       # 输入表单组件
+│   ├── KeySelector.tsx     # API Key 选择器
+│   ├── Layout.tsx          # 布局组件
+│   ├── MediaGenerator.tsx  # 媒体生成组件
+│   ├── SettingsModal.tsx   # 全局设置组件 (新)
+│   ├── PlanDisplay.tsx     # 课程计划显示
+│   ├── PracticeDisplay.tsx # 练习题显示
+│   ├── ResourceDisplay.tsx # 资源显示
+│   └── Student*.tsx        # 学生相关组件
+├── services/               # 服务层
+│   └── geminiService.ts   # Gemini AI 服务
+├── utils/                  # 工具函数
+│   └── fileUtils.ts       # 文件处理工具
 ├── .github/workflows/      # GitHub Actions 配置
-│   └── deploy.yml         # 自動部署配置
-├── App.tsx                # 主應用程式元件
-├── index.tsx              # 應用程式入口
-├── types.ts               # TypeScript 類型定義
+│   └── deploy.yml         # 自动部署配置
+├── App.tsx                # 主应用程序组件
+├── index.tsx              # 应用程序入口
+├── types.ts               # TypeScript 类型定义
 ├── vite.config.ts         # Vite 配置
 ├── tsconfig.json          # TypeScript 配置
-└── package.json           # 專案依賴配置
+└── package.json           # 项目依赖配置
 ```
 
-## 🛠️ 技術棧
+## 🛠️ 技术栈
 
 - **前端框架**: React 19.x
-- **建置工具**: Vite 6.x
-- **程式語言**: TypeScript 5.x
-- **AI 服務**: Google Gemini API
-- **樣式**: CSS Modules
-- **文件處理**: Mammoth.js, html-docx-js
+- **构建工具**: Vite 6.x
+- **编程语言**: TypeScript 5.x
+- **AI 服务**: Google Gemini API (Flash, Imagen, Veo)
+- **样式**: Tailwind CSS
+- **文件处理**: Mammoth.js, html-docx-js
 - **Markdown 渲染**: react-markdown, remark-math, rehype-katex
 
 ## 🚢 部署
 
 ### 部署到 GitHub Pages
 
-本專案已配置 GitHub Actions 自動化部署流程:
+本项目已配置 GitHub Actions 自动化部署流程:
 
-1. **啟用 GitHub Pages**
-   - 前往專案的 Settings > Pages
-   - Source 選擇 "GitHub Actions"
+1. **启用 GitHub Pages**
+   - 前往项目的 Settings > Pages
+   - Source 选择 "GitHub Actions"
 
-2. **設定環境變數(可選)**
+2. **配置环境变量 (可选)**
    - 前往 Settings > Secrets and variables > Actions
-   - 新增 Secret: `GEMINI_API_KEY`(如果需要在建置時使用)
+   - 新增 Secret: `GEMINI_API_KEY` (如果需要在构建时使用)
 
-3. **觸發部署**
-   - 推送程式碼到 `main` 分支會自動觸發部署
-   - 或在 Actions 頁面手動觸發 workflow
+3. **触发部署**
+   - 推送代码到 `main` 分支会自动触发部署
+   - 或在 Actions 页面手动触发 workflow
 
-4. **訪問網站**
-   - 部署完成後,可透過 `https://kingway327.github.io/teacher-s-AI-helper/` 訪問
+4. **访问网站**
+   - 部署完成后，可通过 `https://kingway327.github.io/teacher-s-AI-helper/` 访问
 
-### 部署到其他平台
+## 🔐 环境变量说明
 
-本專案也可輕鬆部署到其他平台:
-
-- **Vercel**: [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/kingway327/teacher-s-AI-helper)
-- **Netlify**: [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/kingway327/teacher-s-AI-helper)
-
-## 🔐 環境變數說明
-
-| 變數名稱 | 必填 | 說明 |
+| 变量名称 | 必填 | 说明 |
 |---------|------|------|
-| `GEMINI_API_KEY` | 是 | Google Gemini API 金鑰,用於 AI 功能 |
+| `GEMINI_API_KEY` | 是 | Google Gemini API 密钥，用于主要 AI 功能 |
+| `IMAGE_API_KEY` | 否 | 图像生成专用密钥 (如果主 Key 不支持 Imagen) |
+| `VIDEO_API_KEY` | 否 | 视频生成专用密钥 (如果主 Key 不支持 Veo) |
 
-> ⚠️ **安全提醒**: 
-> - 請勿將 `.env.local` 檔案提交到版本控制系統
-> - API Key 應妥善保管,避免洩露
-> - 生產環境請使用環境變數或 Secrets 管理
+## 🤝 贡献指南
 
-## 🤝 貢獻指南
+欢迎贡献代码、回报问题或提出建议!
 
-歡迎貢獻程式碼、回報問題或提出建議!
-
-1. Fork 本專案
-2. 創建您的特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交您的變更 (`git commit -m 'Add some AmazingFeature'`)
+1. Fork 本项目
+2. 创建您的特性分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交您的变更 (`git commit -m 'Add some AmazingFeature'`)
 4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 開啟 Pull Request
+5. 开启 Pull Request
 
-## 📝 授權
+## 📝 授权
 
-本專案採用 MIT 授權 - 詳見 [LICENSE](LICENSE) 檔案
+本项目采用 MIT 授权 - 详见 [LICENSE](LICENSE) 文件
 
-## 🙏 致謝
+## 🙏 致谢
 
-- [Google Gemini AI](https://ai.google.dev/) - 提供強大的 AI 能力
-- [React](https://react.dev/) - 優秀的前端框架
-- [Vite](https://vitejs.dev/) - 快速的建置工具
-
-## 📧 聯絡方式
-
-如有任何問題或建議,歡迎透過以下方式聯絡:
-
-- GitHub Issues: [提交問題](https://github.com/kingway327/teacher-s-AI-helper/issues)
-- 專案連結: [https://github.com/kingway327/teacher-s-AI-helper](https://github.com/kingway327/teacher-s-AI-helper)
+- [Google Gemini AI](https://ai.google.dev/) - 提供强大的 AI 能力
+- [React](https://react.dev/) - 优秀的前端框架
+- [Vite](https://vitejs.dev/) - 快速的构建工具
 
 ---
 

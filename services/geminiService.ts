@@ -19,16 +19,25 @@ const getAIClient = (type: 'text' | 'image' | 'video' = 'text') => {
 };
 
 /**
+ * 获取全局记忆（教师介绍）
+ */
+const getGlobalMemory = () => {
+  const bio = localStorage.getItem('TEACHER_BIO');
+  return bio ? `\n【教师背景信息（全局记忆）】：\n${bio}\n请在生成内容时参考以上背景信息，使输出更符合该教师的风格和需求。` : "";
+};
+
+/**
  * 文本生成接口：用于教案、练习、分析等
  */
 const generateTextContent = async (modelName: string, prompt: string, systemInstruction?: string) => {
   const ai = getAIClient('text');
+  const globalMemory = getGlobalMemory();
   try {
     const response = await ai.models.generateContent({
       model: modelName,
       contents: prompt,
       config: {
-        systemInstruction: systemInstruction || "你是一名乐于助人的教师助手，请始终使用简体中文回复。",
+        systemInstruction: (systemInstruction || "你是一名乐于助人的教师助手，请始终使用简体中文回复。") + globalMemory,
       },
     });
     return response.text || "";
@@ -100,9 +109,11 @@ export const generateVideo = async (prompt: string): Promise<string> => {
 };
 
 export const generateLessonPlan = async (request: LessonRequest): Promise<GeneratedPlan> => {
+  const globalMemory = getGlobalMemory();
   const prompt = `
     角色：AI 教育技术架构师 + 一线教师教学顾问。
     任务：基于以下信息，为教师生成一份【可直接用于课堂实施】的教学设计方案（使用简体中文）：
+    ${globalMemory}
     
     【基本信息】：
     - 学科与年级：${request.subject}
@@ -126,7 +137,7 @@ export const generateLessonPlan = async (request: LessonRequest): Promise<Genera
       contents: prompt,
       config: {
         tools: [{ googleSearch: {} }],
-        systemInstruction: "你是一名乐于助人且经验丰富的教师助手，请始终使用简体中文回复。",
+        systemInstruction: "你是一名乐于助人且经验丰富的教师助手，请始终使用简体中文回复。" + globalMemory,
       },
     });
 
@@ -147,9 +158,11 @@ export const generateLessonPlan = async (request: LessonRequest): Promise<Genera
 };
 
 export const generateResourceSupport = async (request: ResourceRequest): Promise<ResourcePlan> => {
+  const globalMemory = getGlobalMemory();
   const prompt = `
     角色：多媒体教学资源专家。
     任务：基于以下教学设计信息，为教师提供多媒体教学资源支持方案（使用简体中文）。
+    ${globalMemory}
     【教学主题】：${request.topic}
     【教学重点与难点】：${request.keyPoints}
     请严格按照通道 A（可信资源检索）和通道 B（AI 素材生成）输出。
@@ -162,7 +175,7 @@ export const generateResourceSupport = async (request: ResourceRequest): Promise
       contents: prompt,
       config: {
         tools: [{ googleSearch: {} }],
-        systemInstruction: "你是一名专业的多媒体教学资源顾问，请始终使用简体中文回复。",
+        systemInstruction: "你是一名专业的多媒体教学资源顾问，请始终使用简体中文回复。" + globalMemory,
       },
     });
 
