@@ -42,9 +42,16 @@ const App: React.FC = () => {
   const [currentAnalysisRequest, setCurrentAnalysisRequest] = useState<StudentAnalysisRequest | null>(null);
 
   useEffect(() => {
-    const user = getCurrentUser();
-    setAuthUser(user);
-    setAuthReady(true);
+    const loadUser = async () => {
+      try {
+        const user = await getCurrentUser();
+        setAuthUser(user);
+      } finally {
+        setAuthReady(true);
+      }
+    };
+
+    loadUser();
   }, []);
 
   const handleGenerateLesson = async (request: LessonRequest) => {
@@ -107,8 +114,8 @@ const App: React.FC = () => {
     setQuickAnswer({ q: question, a: answer });
   };
 
-  const handleLogout = () => {
-    logoutUser();
+  const handleLogout = async () => {
+    await logoutUser();
     setAuthUser(null);
     setHasKey(false);
   };
